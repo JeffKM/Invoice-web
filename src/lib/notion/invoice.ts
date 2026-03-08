@@ -1,0 +1,58 @@
+import { notion } from '@/lib/notion/client'
+import type {
+  NotionInvoicePage,
+  NotionInvoiceItemPage,
+} from '@/lib/notion/types'
+import { transformNotionToInvoice } from '@/lib/invoice/transformer'
+import type { InvoiceData } from '@/lib/invoice/types'
+
+/**
+ * 노션 페이지 ID로 견적서 메인 데이터 조회
+ * @param pageId 노션 페이지 UUID
+ * @throws 페이지가 없거나 접근 불가능한 경우 에러
+ */
+export async function getInvoicePage(
+  pageId: string
+): Promise<NotionInvoicePage> {
+  const page = await notion.pages.retrieve({ page_id: pageId })
+  return page as unknown as NotionInvoicePage
+}
+
+/**
+ * 특정 견적서에 연결된 항목 목록 조회
+ * 정렬 순서(오름차순)로 정렬하여 반환
+ *
+ * @param invoicePageId 견적서 노션 페이지 ID
+ */
+export async function getInvoiceItems(
+  invoicePageId: string
+): Promise<NotionInvoiceItemPage[]> {
+  const itemsResponse = await notion.dataSources.query({
+    data_source_id: process.env.NOTION_ITEMS_DB_ID!,
+    filter: {
+      property: '견적서 연결',
+      relation: { contains: invoicePageId },
+    },
+    sorts: [{ property: '정렬 순서', direction: 'ascending' }],
+  })
+
+  return itemsResponse.results as unknown as NotionInvoiceItemPage[]
+}
+
+/**
+ * 견적서 ID로 전체 견적서 데이터 조회 및 도메인 모델 반환
+ * 노션 페이지 + 항목 목록을 병렬로 조회 후 변환
+ * @param id 노션 페이지 UUID (URL 파라미터)
+ * @returns InvoiceData 도메인 모델
+ * @throws 페이지 없음, API 오류 등
+ */
+export async function getInvoiceById(id: string): Promise<InvoiceData> {
+  // 견적서 메인 페이지와 항목 목록을 병렬 조회
+  const [page, items] = await Promise.all([
+    getInvoicePage(id),
+    getInvoiceItems(id),
+  ])
+
+  // 도메인 모델로 변환
+  return transformNotionToInvoice(page, items)
+}
