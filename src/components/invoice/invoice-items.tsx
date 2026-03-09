@@ -19,22 +19,40 @@ export function InvoiceItems({ items }: InvoiceItemsProps) {
         <table className="w-full min-w-max text-sm">
           <thead>
             <tr className="border-border border-b">
-              <th className="text-muted-foreground px-2 py-3.5 text-left font-semibold whitespace-nowrap first:px-0 last:px-0">
+              <th
+                scope="col"
+                className="text-muted-foreground px-2 py-3.5 text-left font-semibold whitespace-nowrap first:px-0 last:px-0"
+              >
                 No.
               </th>
-              <th className="text-muted-foreground px-2 py-3.5 text-left font-semibold first:px-0 last:px-0">
+              <th
+                scope="col"
+                className="text-muted-foreground px-2 py-3.5 text-left font-semibold first:px-0 last:px-0"
+              >
                 항목명
               </th>
-              <th className="text-muted-foreground px-2 py-3.5 text-right font-semibold whitespace-nowrap first:px-0 last:px-0">
+              <th
+                scope="col"
+                className="text-muted-foreground px-2 py-3.5 text-right font-semibold whitespace-nowrap first:px-0 last:px-0"
+              >
                 수량
               </th>
-              <th className="text-muted-foreground px-2 py-3.5 text-right font-semibold whitespace-nowrap first:px-0 last:px-0">
+              <th
+                scope="col"
+                className="text-muted-foreground px-2 py-3.5 text-right font-semibold whitespace-nowrap first:px-0 last:px-0"
+              >
                 단가
               </th>
-              <th className="text-muted-foreground px-2 py-3.5 text-right font-semibold whitespace-nowrap first:px-0 last:px-0">
+              <th
+                scope="col"
+                className="text-muted-foreground px-2 py-3.5 text-right font-semibold whitespace-nowrap first:px-0 last:px-0"
+              >
                 금액
               </th>
-              <th className="text-muted-foreground px-2 py-3.5 text-left font-semibold first:px-0 last:px-0">
+              <th
+                scope="col"
+                className="text-muted-foreground px-2 py-3.5 text-left font-semibold first:px-0 last:px-0"
+              >
                 비고
               </th>
             </tr>
