@@ -39,3 +39,6 @@ Thumbs.db
 
 # Generated files
 next-env.d.ts
+
+# Shrimp task manager data (자동 생성)
+shrimp_data/
