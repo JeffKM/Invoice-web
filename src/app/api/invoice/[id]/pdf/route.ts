@@ -1,15 +1,13 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { getInvoiceById } from '@/lib/notion/invoice'
+import { generatePdf } from '@/lib/pdf/generator'
 
 /**
  * PDF 생성 API Route
  * GET /api/invoice/[id]/pdf
  *
- * TODO Phase 3: puppeteer + @sparticuz/chromium으로 실제 PDF 생성 구현
- * - Vercel 서버리스 환경에서 @sparticuz/chromium 필요
- * - Vercel 이슈 발생 시 @react-pdf/renderer로 대체 검토
- *
- * 현재: 플레이스홀더 구현 (견적서 데이터 조회까지만)
+ * 견적서 페이지를 puppeteer로 렌더링하여 A4 PDF를 생성합니다.
+ * 파일명 형식: 견적서_[견적서번호]_[고객사명].pdf
  */
 export async function GET(
   request: NextRequest,
@@ -18,27 +16,27 @@ export async function GET(
   const { id } = await context.params
 
   try {
-    // 견적서 데이터 조회 (데이터 유효성 검증 겸)
+    // 견적서 데이터 조회 (존재 여부 검증 및 파일명 생성용)
     const invoice = await getInvoiceById(id)
 
-    // TODO: puppeteer로 PDF 생성
-    // const pdf = await generatePdfWithPuppeteer(id);
-    // return new NextResponse(pdf, {
-    //   headers: {
-    //     'Content-Type': 'application/pdf',
-    //     'Content-Disposition': `attachment; filename*=UTF-8''${encodeURIComponent(`견적서_${invoice.invoiceNumber}_${invoice.client.companyName}.pdf`)}`,
-    //   },
-    // });
+    // 견적서 페이지 URL 구성 (현재 요청의 origin 기준)
+    const invoiceUrl = `${request.nextUrl.origin}/invoice/${id}`
 
-    // Phase 3 구현 전 임시 응답
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'PDF 생성 기능은 Phase 3에서 구현 예정입니다.',
-        invoiceNumber: invoice.invoiceNumber,
+    // PDF 생성
+    const pdfBuffer = await generatePdf(invoiceUrl)
+
+    // 파일명 인코딩: RFC 5987 형식 (한글 포함)
+    const fileName = `견적서_${invoice.invoiceNumber}_${invoice.client.companyName}.pdf`
+    const encodedFileName = encodeURIComponent(fileName)
+
+    return new NextResponse(pdfBuffer, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename*=UTF-8''${encodedFileName}`,
+        'Content-Length': String(pdfBuffer.byteLength),
       },
-      { status: 501 }
-    )
+    })
   } catch (error) {
     const isNotFound =
       error instanceof Error &&
