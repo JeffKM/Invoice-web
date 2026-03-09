@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server'
 import { getInvoiceById } from '@/lib/notion/invoice'
 import { generatePdf } from '@/lib/pdf/generator'
+import { logger } from '@/lib/logger'
 
 /**
  * PDF 생성 API Route
@@ -60,7 +61,7 @@ export async function GET(
       )
     }
 
-    console.error('PDF 생성 API 오류:', error)
+    logger.error('PDF 생성 API 오류', error, `pdf-route/${id}`)
     return NextResponse.json(
       { success: false, error: 'PDF 생성 중 오류가 발생했습니다.' },
       { status: 500 }

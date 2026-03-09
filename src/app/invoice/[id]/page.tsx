@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { getInvoiceById } from '@/lib/notion/invoice'
 import { InvoiceView } from '@/components/invoice/invoice-view'
+import { logger } from '@/lib/logger'
 
 /** ISR: 60초마다 백그라운드 재검증 (노션 API rate limit 대응) */
 export const revalidate = 60
@@ -66,6 +67,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
     }
 
     // 그 외 에러는 error.tsx에서 처리
+    logger.error('견적서 페이지 로드 오류', error, `invoice-page/${id}`)
     throw error
   }
 }
