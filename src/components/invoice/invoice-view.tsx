@@ -22,7 +22,7 @@ export function InvoiceView({ invoice }: InvoiceViewProps) {
   return (
     <main className="bg-muted/30 min-h-screen py-8 print:bg-white print:py-0">
       <article
-        className="bg-card sm:border-border mx-auto w-full max-w-[794px] space-y-6 px-8 py-10 shadow-sm sm:rounded-xl sm:border print:shadow-none"
+        className="bg-card sm:border-border mx-auto w-full max-w-2xl space-y-7 px-6 py-10 shadow-sm sm:rounded-2xl sm:border sm:px-10 sm:py-12 print:shadow-none"
         aria-label="견적서"
       >
         {/* 만료 배너 (유효기간이 지난 경우만 표시) */}

@@ -13,10 +13,10 @@ interface InvoiceInfoProps {
 export function InvoiceInfo({ issuer, client }: InvoiceInfoProps) {
   return (
     <section aria-label="발행자 및 고객 정보">
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <div className="bg-muted/40 grid grid-cols-1 gap-6 rounded-xl p-5 sm:grid-cols-2 sm:p-6">
         {/* 발행자 정보 */}
         <div className="space-y-1">
-          <h2 className="text-muted-foreground mb-3 text-xs font-semibold tracking-wider uppercase">
+          <h2 className="text-muted-foreground mb-3 text-[10px] font-semibold tracking-widest uppercase">
             발행자
           </h2>
           <p className="text-foreground font-semibold">{issuer.companyName}</p>
@@ -34,7 +34,7 @@ export function InvoiceInfo({ issuer, client }: InvoiceInfoProps) {
 
         {/* 고객사 정보 */}
         <div className="space-y-1">
-          <h2 className="text-muted-foreground mb-3 text-xs font-semibold tracking-wider uppercase">
+          <h2 className="text-muted-foreground mb-3 text-[10px] font-semibold tracking-widest uppercase">
             고객사
           </h2>
           <p className="text-foreground font-semibold">{client.companyName}</p>

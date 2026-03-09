@@ -1,4 +1,5 @@
 import type { InvoiceStatus } from '@/lib/invoice/types'
+import { Badge } from '@/components/ui/badge'
 
 /** 상태별 한국어 표시 및 색상 클래스 매핑 */
 const STATUS_MAP: Record<InvoiceStatus, { label: string; className: string }> =
@@ -6,21 +7,22 @@ const STATUS_MAP: Record<InvoiceStatus, { label: string; className: string }> =
     Draft: {
       label: '초안',
       className:
-        'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+        'border-transparent bg-secondary text-secondary-foreground px-3 py-1 text-sm rounded-full',
     },
     Sent: {
       label: '발송됨',
       className:
-        'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
+        'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300 px-3 py-1 text-sm rounded-full',
     },
     Approved: {
       label: '승인',
       className:
-        'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
+        'border-green-200 bg-green-50 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-300 px-3 py-1 text-sm rounded-full',
     },
     Rejected: {
       label: '거절',
-      className: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
+      className:
+        'border-red-200 bg-red-50 text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300 px-3 py-1 text-sm rounded-full',
     },
   }
 
@@ -36,11 +38,12 @@ export function InvoiceStatusBadge({ status }: InvoiceStatusBadgeProps) {
   const { label, className } = STATUS_MAP[status]
 
   return (
-    <span
-      className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${className}`}
+    <Badge
+      variant="outline"
+      className={className}
       aria-label={`견적서 상태: ${label}`}
     >
       {label}
-    </span>
+    </Badge>
   )
 }

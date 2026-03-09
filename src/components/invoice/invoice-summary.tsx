@@ -15,7 +15,7 @@ export function InvoiceSummarySection({ summary }: InvoiceSummaryProps) {
   return (
     <section aria-label="견적서 합계">
       <div className="flex justify-end">
-        <dl className="w-full max-w-xs space-y-2">
+        <dl className="bg-muted/40 w-full max-w-sm space-y-2 rounded-xl p-5 sm:p-6">
           <div className="flex justify-between text-sm">
             <dt className="text-muted-foreground">소계</dt>
             <dd className="text-foreground font-medium tabular-nums">
@@ -28,7 +28,7 @@ export function InvoiceSummarySection({ summary }: InvoiceSummaryProps) {
               {formatKRW(tax)}
             </dd>
           </div>
-          <div className="border-border flex justify-between border-t pt-2 text-base font-bold">
+          <div className="border-border flex justify-between border-t pt-3 text-lg font-bold">
             <dt className="text-foreground">총액</dt>
             <dd className="text-foreground tabular-nums">{formatKRW(total)}</dd>
           </div>

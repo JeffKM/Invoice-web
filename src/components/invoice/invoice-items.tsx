@@ -12,29 +12,29 @@ interface InvoiceItemsProps {
 export function InvoiceItems({ items }: InvoiceItemsProps) {
   return (
     <section aria-label="견적 항목 목록">
-      <h2 className="text-muted-foreground mb-4 text-sm font-semibold tracking-wider uppercase">
+      <h2 className="text-muted-foreground mb-5 text-sm font-semibold tracking-wider uppercase">
         견적 항목
       </h2>
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full min-w-max text-sm">
           <thead>
             <tr className="border-border border-b">
-              <th className="text-muted-foreground py-3 text-left font-semibold">
+              <th className="text-muted-foreground px-2 py-3.5 text-left font-semibold whitespace-nowrap first:px-0 last:px-0">
                 No.
               </th>
-              <th className="text-muted-foreground py-3 text-left font-semibold">
+              <th className="text-muted-foreground px-2 py-3.5 text-left font-semibold first:px-0 last:px-0">
                 항목명
               </th>
-              <th className="text-muted-foreground py-3 text-right font-semibold">
+              <th className="text-muted-foreground px-2 py-3.5 text-right font-semibold whitespace-nowrap first:px-0 last:px-0">
                 수량
               </th>
-              <th className="text-muted-foreground py-3 text-right font-semibold">
+              <th className="text-muted-foreground px-2 py-3.5 text-right font-semibold whitespace-nowrap first:px-0 last:px-0">
                 단가
               </th>
-              <th className="text-muted-foreground py-3 text-right font-semibold">
+              <th className="text-muted-foreground px-2 py-3.5 text-right font-semibold whitespace-nowrap first:px-0 last:px-0">
                 금액
               </th>
-              <th className="text-muted-foreground py-3 text-left font-semibold">
+              <th className="text-muted-foreground px-2 py-3.5 text-left font-semibold first:px-0 last:px-0">
                 비고
               </th>
             </tr>
@@ -45,21 +45,23 @@ export function InvoiceItems({ items }: InvoiceItemsProps) {
                 key={item.id}
                 className="border-border/50 border-b last:border-0"
               >
-                <td className="text-muted-foreground py-3">{index + 1}</td>
-                <td className="text-foreground py-3 font-medium">
+                <td className="text-muted-foreground px-2 py-4 whitespace-nowrap first:px-0 last:px-0">
+                  {index + 1}
+                </td>
+                <td className="text-foreground px-2 py-4 font-medium first:px-0 last:px-0">
                   {item.name}
                 </td>
-                <td className="text-foreground py-3 text-right tabular-nums">
+                <td className="text-foreground px-2 py-4 text-right whitespace-nowrap tabular-nums first:px-0 last:px-0">
                   {item.quantity.toLocaleString('ko-KR')}
                 </td>
-                <td className="text-foreground py-3 text-right tabular-nums">
+                <td className="text-foreground px-2 py-4 text-right whitespace-nowrap tabular-nums first:px-0 last:px-0">
                   {formatKRW(item.unitPrice)}
                 </td>
-                <td className="text-foreground py-3 text-right font-semibold tabular-nums">
+                <td className="text-foreground px-2 py-4 text-right font-semibold whitespace-nowrap tabular-nums first:px-0 last:px-0">
                   {formatKRW(item.amount)}
                 </td>
-                <td className="text-muted-foreground py-3">
-                  {item.note ?? '-'}
+                <td className="text-muted-foreground px-2 py-4 first:px-0 last:px-0">
+                  {item.note ?? ''}
                 </td>
               </tr>
             ))}

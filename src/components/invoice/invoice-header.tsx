@@ -20,10 +20,12 @@ export function InvoiceHeader({ invoice }: InvoiceHeaderProps) {
     <header className="border-border border-b pb-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex flex-col gap-2">
-          <h1 className="text-foreground text-2xl font-bold">{title}</h1>
-          <p className="text-muted-foreground text-sm">
+          <h1 className="text-foreground text-2xl font-bold tracking-tight sm:text-3xl">
+            {title}
+          </h1>
+          <p className="text-muted-foreground flex items-center gap-2 text-sm">
             견적서 번호:{' '}
-            <span className="text-foreground font-mono font-semibold">
+            <span className="bg-muted text-foreground rounded px-2 py-0.5 font-mono text-xs font-medium">
               {invoiceNumber}
             </span>
           </p>
@@ -32,7 +34,7 @@ export function InvoiceHeader({ invoice }: InvoiceHeaderProps) {
           <InvoiceStatusBadge status={status} />
         </div>
       </div>
-      <dl className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-sm">
+      <dl className="mt-5 flex flex-wrap gap-x-8 gap-y-2 text-sm">
         <div className="flex gap-2">
           <dt className="text-muted-foreground">발행일</dt>
           <dd className="text-foreground font-medium">
