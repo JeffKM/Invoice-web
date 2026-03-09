@@ -74,6 +74,43 @@
         }
       ],
       "summary": "Phase 1 Task 002 완료: InvoiceData 도메인 모델, Notion API 응답 타입, Zod 환경변수 검증 스키마 구현됨."
+    },
+    {
+      "id": "976c41a5-4763-41c8-8005-9ecd6bcdd7e4",
+      "name": "Task 006: PDF 생성 API 구현",
+      "description": "puppeteer-core + @sparticuz/chromium을 사용하여 /api/invoice/[id]/pdf Route에 실제 PDF 생성 로직 구현. 현재 501 플레이스홀더를 실제 동작하는 PDF 다운로드 API로 교체.\n\n수락 기준:\n- 유효한 견적서 ID로 요청 시 PDF 바이너리 반환 (200)\n- Content-Disposition 헤더: 견적서_[번호]_[고객사].pdf\n- 존재하지 않는 ID: 404 응답\n- 생성 오류: 500 응답\n- 로컬 및 Vercel 서버리스 환경 모두 동작",
+      "notes": "로컬 개발 시 puppeteer 전체 패키지 사용, Vercel 배포 시 @sparticuz/chromium-min 사용 권장. AWS_LAMBDA_FUNCTION_NAME 또는 VERCEL 환경변수로 분기 처리.",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2026-03-09T04:57:19.166Z",
+      "updatedAt": "2026-03-09T05:56:08.905Z",
+      "relatedFiles": [
+        {
+          "path": "src/app/api/invoice/[id]/pdf/route.ts",
+          "type": "TO_MODIFY",
+          "description": "현재 501 플레이스홀더, 실제 PDF 생성으로 교체"
+        },
+        {
+          "path": "src/lib/pdf/generator.ts",
+          "type": "CREATE",
+          "description": "puppeteer PDF 생성 유틸리티"
+        },
+        {
+          "path": "next.config.ts",
+          "type": "TO_MODIFY",
+          "description": "serverExternalPackages 설정 추가"
+        },
+        {
+          "path": "package.json",
+          "type": "TO_MODIFY",
+          "description": "puppeteer-core, @sparticuz/chromium 의존성 추가"
+        }
+      ],
+      "implementationGuide": "1. puppeteer-core, @sparticuz/chromium 설치\n2. next.config.ts에 serverExternalPackages 추가\n3. src/lib/pdf/generator.ts 작성 (환경 분기: 로컬=puppeteer 내장 크로미움, Vercel=@sparticuz/chromium)\n4. /api/invoice/[id]/pdf/route.ts 실제 구현으로 교체\n5. Playwright MCP로 PDF 다운로드 테스트",
+      "verificationCriteria": "1. GET /api/invoice/[id]/pdf 요청 시 application/pdf Content-Type으로 파일 수신\n2. Content-Disposition 헤더에 한글 파일명 인코딩 정상\n3. 404/500 에러 케이스 JSON 응답 확인\n4. npm run build 성공",
+      "analysisResult": "Next.js 15.5.3 App Router 기반 Invoice Web Viewer에서 PDF 생성 API를 구현합니다. puppeteer-core + @sparticuz/chromium을 사용하여 Vercel 서버리스 환경에서 견적서 페이지를 A4 PDF로 변환합니다.",
+      "summary": "PDF 생성 API 완전 구현 완료. puppeteer-core + @sparticuz/chromium 설치, next.config.ts serverExternalPackages 설정, src/lib/pdf/generator.ts 작성(로컬/Vercel 환경 분기), /api/invoice/[id]/pdf route.ts 실제 구현. 200(PDF 바이너리 140KB), 404(견적서 없음), 500(생성 오류) 모두 정상 동작 확인. 추가로 @notionhq/client v5의 dataSources.query 호환성 버그 수정(fetch 직접 호출로 교체), formatKoreanDate null-safety 수정 포함.",
+      "completedAt": "2026-03-09T05:56:08.902Z"
     }
   ]
 }

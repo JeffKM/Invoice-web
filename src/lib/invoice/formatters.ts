@@ -19,7 +19,9 @@ export function calculateTax(subtotal: number): number {
  * 예: "2026-03-08" → "2026년 3월 8일"
  */
 export function formatKoreanDate(isoDate: string): string {
+  if (!isoDate) return ''
   const date = new Date(isoDate)
+  if (isNaN(date.getTime())) return ''
   return new Intl.DateTimeFormat('ko-KR', {
     year: 'numeric',
     month: 'long',

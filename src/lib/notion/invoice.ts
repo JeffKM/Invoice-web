@@ -20,23 +20,37 @@ export async function getInvoicePage(
 
 /**
  * 특정 견적서에 연결된 항목 목록 조회
- * 정렬 순서(오름차순)로 정렬하여 반환
+ * @notionhq/client v5에서 databases.query가 제거되어 fetch로 직접 호출
  *
  * @param invoicePageId 견적서 노션 페이지 ID
  */
 export async function getInvoiceItems(
   invoicePageId: string
 ): Promise<NotionInvoiceItemPage[]> {
-  const itemsResponse = await notion.dataSources.query({
-    data_source_id: process.env.NOTION_ITEMS_DB_ID!,
-    filter: {
-      property: '견적서 연결',
-      relation: { contains: invoicePageId },
+  const dbId = process.env.NOTION_ITEMS_DB_ID!
+  const res = await fetch(`https://api.notion.com/v1/databases/${dbId}/query`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.NOTION_API_KEY}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json',
     },
-    sorts: [{ property: '정렬 순서', direction: 'ascending' }],
+    body: JSON.stringify({
+      filter: {
+        property: 'Invoices',
+        relation: { contains: invoicePageId },
+      },
+    }),
+    next: { revalidate: 60 },
   })
 
-  return itemsResponse.results as unknown as NotionInvoiceItemPage[]
+  if (!res.ok) {
+    const err = await res.json()
+    throw new Error(err.message ?? 'Items DB 조회 실패')
+  }
+
+  const data = await res.json()
+  return data.results as NotionInvoiceItemPage[]
 }
 
 /**
