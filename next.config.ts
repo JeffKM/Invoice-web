@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  // puppeteer-core, @sparticuz/chromium은 네이티브 바이너리 포함 → 번들링 제외
+  serverExternalPackages: ['puppeteer-core', '@sparticuz/chromium'],
   poweredByHeader: false,
   compress: true,
   images: {
