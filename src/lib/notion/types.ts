@@ -40,6 +40,12 @@ type NotionSelectProperty = NotionPropertyBase & {
   select: { id: string; name: string; color: string } | null
 }
 
+/** Notion Status 속성 (워크플로우 상태 - Draft/Sent/Approved/Rejected) */
+type NotionStatusProperty = NotionPropertyBase & {
+  type: 'status'
+  status: { id: string; name: string; color: string } | null
+}
+
 /** Notion Date 속성 */
 type NotionDateProperty = NotionPropertyBase & {
   type: 'date'
@@ -86,6 +92,7 @@ type NotionProperty =
   | NotionTitleProperty
   | NotionRichTextProperty
   | NotionSelectProperty
+  | NotionStatusProperty
   | NotionDateProperty
   | NotionNumberProperty
   | NotionEmailProperty
@@ -95,7 +102,18 @@ type NotionProperty =
 
 /**
  * 노션 견적서 메인 DB 페이지 타입
- * Invoices DB의 속성 구조를 정의
+ * 실제 Invoices DB 속성 구조 반영
+ *
+ * 필수 속성 (항상 존재):
+ *   - 견적서 번호: title (페이지 제목)
+ *   - 발행일: date
+ *   - 유효기간: date
+ *   - 클라이언트명: rich_text
+ *   - 상태: status
+ *   - 총 금액: number
+ *
+ * 선택 속성 (Notion에 추가 후 채움):
+ *   - 발행자/고객 정보, 결제 조건, 특이사항
  */
 export interface NotionInvoicePage {
   id: string
@@ -103,32 +121,36 @@ export interface NotionInvoicePage {
   created_time: string
   last_edited_time: string
   properties: {
-    제목?: NotionTitleProperty
-    '견적서 번호'?: NotionRichTextProperty
-    상태?: NotionSelectProperty
-    생성일?: NotionDateProperty
+    // 필수: 견적서 번호 (title 타입 — Notion 페이지 제목)
+    '견적서 번호'?: NotionTitleProperty
+    // 필수: 날짜
+    발행일?: NotionDateProperty
     유효기간?: NotionDateProperty
+    // 필수: 클라이언트
+    클라이언트명?: NotionRichTextProperty
+    // 필수: 상태 (status 타입: Draft / Sent / Approved / Rejected)
+    상태?: NotionStatusProperty
+    // 필수: 합계
+    '총 금액'?: NotionNumberProperty
+    // 선택: 발행자 정보
     '발행자 회사명'?: NotionRichTextProperty
     '발행자 담당자'?: NotionRichTextProperty
     '발행자 이메일'?: NotionEmailProperty
     '발행자 전화번호'?: NotionPhoneNumberProperty
     사업자번호?: NotionRichTextProperty
-    고객사명?: NotionRichTextProperty
+    // 선택: 고객 추가 정보
     '고객 담당자'?: NotionRichTextProperty
     '고객 이메일'?: NotionEmailProperty
-    소계?: NotionNumberProperty
-    부가세?: NotionFormulaNumberProperty
-    총액?: NotionFormulaNumberProperty
+    // 선택: 결제 조건 / 특이사항
     '결제 조건'?: NotionRichTextProperty
     특이사항?: NotionRichTextProperty
-    '항목 연결'?: NotionRelationProperty
     [key: string]: NotionProperty | undefined
   }
 }
 
 /**
  * 노션 견적 항목 DB 페이지 타입
- * Invoice Items DB의 속성 구조를 정의
+ * 실제 Items DB 속성 구조 반영
  */
 export interface NotionInvoiceItemPage {
   id: string
@@ -141,8 +163,8 @@ export interface NotionInvoiceItemPage {
     단가?: NotionNumberProperty
     금액?: NotionFormulaNumberProperty
     비고?: NotionRichTextProperty
-    '견적서 연결'?: NotionRelationProperty
     '정렬 순서'?: NotionNumberProperty
+    Invoices?: NotionRelationProperty
     [key: string]: NotionProperty | undefined
   }
 }
