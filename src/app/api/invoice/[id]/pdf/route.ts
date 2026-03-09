@@ -1,3 +1,5 @@
+export const maxDuration = 60
+
 import { type NextRequest, NextResponse } from 'next/server'
 import { getInvoiceById } from '@/lib/notion/invoice'
 import { generatePdf } from '@/lib/pdf/generator'

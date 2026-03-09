@@ -1,6 +1,6 @@
 {
   "functions": {
-    "src/app/api/invoice/[id]/pdf/route.ts": {
+    "app/api/invoice/[id]/pdf/route.ts": {
       "memory": 3008,
       "maxDuration": 60
     }
