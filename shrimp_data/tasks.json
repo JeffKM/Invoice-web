@@ -1,0 +1,79 @@
+{
+  "tasks": [
+    {
+      "id": "de173b78-5603-4e62-a98f-2cd299e24e9d",
+      "name": "Task 001: 프로젝트 구조 및 라우팅 설정",
+      "description": "Next.js 15.5.3 App Router 기반 전체 라우트 구조 생성. /invoice/[id] 견적서 뷰어 페이지, /api/invoice/[id]/pdf PDF API Route, 루트 레이아웃(ThemeProvider, Toaster, Geist 폰트), 루트 플레이스홀더 페이지, 에러/404 처리 파일 구현.",
+      "status": "completed",
+      "dependencies": [],
+      "createdAt": "2026-03-09T02:29:08.189Z",
+      "updatedAt": "2026-03-09T02:29:08.189Z",
+      "completedAt": "2026-03-09T02:29:08.189Z",
+      "implementationGuide": "1. src/app/layout.tsx - ThemeProvider, Toaster, Geist 폰트 적용\n2. src/app/page.tsx - 플레이스홀더 안내 페이지\n3. src/app/invoice/[id]/page.tsx - Server Component (ISR revalidate=60)\n4. src/app/invoice/[id]/not-found.tsx - 커스텀 404\n5. src/app/invoice/[id]/error.tsx - 에러 바운더리\n6. src/app/api/invoice/[id]/pdf/route.ts - 501 플레이스홀더",
+      "verificationCriteria": "모든 라우트 파일 존재 확인, /invoice/[id] 접근 시 페이지 렌더링, /api/invoice/[id]/pdf 접근 시 501 응답 반환",
+      "relatedFiles": [
+        {
+          "path": "src/app/layout.tsx",
+          "type": "TO_MODIFY",
+          "description": "루트 레이아웃"
+        },
+        {
+          "path": "src/app/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "루트 플레이스홀더 페이지"
+        },
+        {
+          "path": "src/app/invoice/[id]/page.tsx",
+          "type": "TO_MODIFY",
+          "description": "견적서 뷰어 페이지"
+        },
+        {
+          "path": "src/app/invoice/[id]/not-found.tsx",
+          "type": "TO_MODIFY",
+          "description": "커스텀 404 페이지"
+        },
+        {
+          "path": "src/app/invoice/[id]/error.tsx",
+          "type": "TO_MODIFY",
+          "description": "에러 바운더리"
+        },
+        {
+          "path": "src/app/api/invoice/[id]/pdf/route.ts",
+          "type": "TO_MODIFY",
+          "description": "PDF API Route 플레이스홀더"
+        }
+      ],
+      "summary": "Phase 1 Task 001 완료: Next.js App Router 기반 라우팅 구조 생성. 견적서 뷰어 (/invoice/[id]), PDF API Route, 루트 레이아웃, 에러/404 페이지 구현됨."
+    },
+    {
+      "id": "9d78c733-3fa7-4dad-9e92-bbdd4c6fc1df",
+      "name": "Task 002: 타입 정의 및 인터페이스 설계",
+      "description": "도메인 모델 타입과 Notion API 응답 타입, 환경변수 검증 스키마 정의. InvoiceData, InvoiceItem, Issuer, InvoiceClient, InvoiceSummary, InvoiceStatus, ApiResponse<T> 도메인 타입과 NotionInvoicePage, NotionInvoiceItemPage 원시 타입, Zod 기반 환경변수 검증 구현.",
+      "status": "completed",
+      "dependencies": ["de173b78-5603-4e62-a98f-2cd299e24e9d"],
+      "createdAt": "2026-03-09T02:29:08.189Z",
+      "updatedAt": "2026-03-09T02:29:08.189Z",
+      "completedAt": "2026-03-09T02:29:08.189Z",
+      "implementationGuide": "1. src/lib/invoice/types.ts - InvoiceData 등 도메인 모델 타입 정의\n2. src/lib/notion/types.ts - Notion API 응답 원시 타입 정의\n3. src/lib/env.ts - Zod envSchema로 NOTION_API_KEY, NOTION_INVOICES_DB_ID, NOTION_ITEMS_DB_ID 검증\nNEXT_PUBLIC_ 접두사 절대 사용 금지",
+      "verificationCriteria": "TypeScript 컴파일 오류 없음, Zod 스키마 유효성 검사 통과, ApiResponse<T> 타입이 API Route에서 사용 가능",
+      "relatedFiles": [
+        {
+          "path": "src/lib/invoice/types.ts",
+          "type": "TO_MODIFY",
+          "description": "도메인 모델 타입"
+        },
+        {
+          "path": "src/lib/notion/types.ts",
+          "type": "TO_MODIFY",
+          "description": "Notion API 응답 타입"
+        },
+        {
+          "path": "src/lib/env.ts",
+          "type": "TO_MODIFY",
+          "description": "환경변수 Zod 검증"
+        }
+      ],
+      "summary": "Phase 1 Task 002 완료: InvoiceData 도메인 모델, Notion API 응답 타입, Zod 환경변수 검증 스키마 구현됨."
+    }
+  ]
+}
