@@ -45,6 +45,9 @@ export async function generatePdf(url: string): Promise<ArrayBuffer> {
       timeout: 30000,
     })
 
+    // 폰트가 완전히 로드·적용될 때까지 대기
+    await page.evaluate(() => document.fonts.ready)
+
     const pdf = await page.pdf({
       format: 'A4',
       printBackground: true,
