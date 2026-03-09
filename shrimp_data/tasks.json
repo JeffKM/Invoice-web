@@ -1,116 +1,160 @@
 {
   "tasks": [
     {
-      "id": "de173b78-5603-4e62-a98f-2cd299e24e9d",
-      "name": "Task 001: 프로젝트 구조 및 라우팅 설정",
-      "description": "Next.js 15.5.3 App Router 기반 전체 라우트 구조 생성. /invoice/[id] 견적서 뷰어 페이지, /api/invoice/[id]/pdf PDF API Route, 루트 레이아웃(ThemeProvider, Toaster, Geist 폰트), 루트 플레이스홀더 페이지, 에러/404 처리 파일 구현.",
+      "id": "b6785dfb-1d9b-4203-a211-2c80b020ea68",
+      "name": "데모 페이지 searchParams 확장",
+      "description": "src/app/invoice/demo/page.tsx에 searchParams 파라미터를 추가하여 URL 쿼리 파라미터로 다양한 mock 데이터를 렌더링할 수 있도록 수정한다.\n\n수정 내용:\n- DemoPageProps 인터페이스 추가: { searchParams: Promise<{ id?: string }> }\n- 함수를 async로 변경하고 searchParams await 처리\n- getMockInvoiceById(id ?? 'mock-sent-001') 로 동적 선택\n\n지원되는 URL:\n- /invoice/demo          → mock-sent-001 (기본값, Sent 상태)\n- /invoice/demo?id=mock-draft-001    → Draft 상태\n- /invoice/demo?id=mock-approved-001 → Approved 상태\n- /invoice/demo?id=mock-rejected-001 → Rejected 상태\n- /invoice/demo?id=mock-expired-001  → 만료 배너 상태",
       "status": "completed",
       "dependencies": [],
-      "createdAt": "2026-03-09T02:29:08.189Z",
-      "updatedAt": "2026-03-09T02:29:08.189Z",
-      "completedAt": "2026-03-09T02:29:08.189Z",
-      "implementationGuide": "1. src/app/layout.tsx - ThemeProvider, Toaster, Geist 폰트 적용\n2. src/app/page.tsx - 플레이스홀더 안내 페이지\n3. src/app/invoice/[id]/page.tsx - Server Component (ISR revalidate=60)\n4. src/app/invoice/[id]/not-found.tsx - 커스텀 404\n5. src/app/invoice/[id]/error.tsx - 에러 바운더리\n6. src/app/api/invoice/[id]/pdf/route.ts - 501 플레이스홀더",
-      "verificationCriteria": "모든 라우트 파일 존재 확인, /invoice/[id] 접근 시 페이지 렌더링, /api/invoice/[id]/pdf 접근 시 501 응답 반환",
+      "createdAt": "2026-03-09T07:31:23.231Z",
+      "updatedAt": "2026-03-09T07:31:56.019Z",
       "relatedFiles": [
         {
-          "path": "src/app/layout.tsx",
+          "path": "src/app/invoice/demo/page.tsx",
           "type": "TO_MODIFY",
-          "description": "루트 레이아웃"
+          "description": "searchParams 기반 동적 mock 데이터 선택 지원 추가"
         },
         {
-          "path": "src/app/page.tsx",
-          "type": "TO_MODIFY",
-          "description": "루트 플레이스홀더 페이지"
+          "path": "src/lib/invoice/mock-data.ts",
+          "type": "REFERENCE",
+          "description": "getMockInvoiceById 함수 및 5가지 mock ID 확인"
+        }
+      ],
+      "implementationGuide": "Read src/app/invoice/demo/page.tsx\n→ interface DemoPageProps { searchParams: Promise<{ id?: string }> } 추가\n→ export default async function InvoiceDemoPage({ searchParams }: DemoPageProps)\n→ const { id } = await searchParams\n→ getMockInvoiceById(id ?? 'mock-sent-001')\n→ npm run typecheck 로 타입 오류 없음 확인",
+      "verificationCriteria": "1. npm run typecheck 타입 오류 없음\n2. /invoice/demo 접속 시 Sent 상태(그린소프트) 표시\n3. /invoice/demo?id=mock-draft-001 접속 시 Draft 상태(테크스타트) 표시\n4. /invoice/demo?id=mock-expired-001 접속 시 만료 배너 표시",
+      "analysisResult": "Task 006-1 목표: Playwright MCP 브라우저 도구를 사용하여 견적서 서비스의 E2E 통합 테스트를 수행한다. 노션 API 없이 테스트 가능하도록 /invoice/demo 페이지를 searchParams 기반으로 확장하고, 5가지 상태/에러/반응형 시나리오를 순차적으로 검증한다. Next.js 15의 searchParams는 Promise 타입(await 필수)이며, 기존 getMockInvoiceById 함수를 재사용한다.",
+      "summary": "DemoPageProps 인터페이스 추가, async 함수 전환, searchParams await 처리, getMockInvoiceById(id ?? 'mock-sent-001') 동적 선택 구현 완료. npm run typecheck 통과. Next.js 15 패턴(Promise<searchParams>) 준수.",
+      "completedAt": "2026-03-09T07:31:56.016Z"
+    },
+    {
+      "id": "4b19db2d-0bcb-4b60-87db-08378ec66148",
+      "name": "정상 시나리오 E2E 테스트 — 데스크톱",
+      "description": "Playwright MCP 브라우저 도구로 /invoice/demo 페이지(Sent 상태)를 1280px 데스크톱 뷰에서 전체 섹션 렌더링을 검증한다.\n\n검증 항목:\n1. 페이지 로드 성공 (오류 없음)\n2. 견적서 헤더: 제목, 번호(INV-2026-002), 발송됨 뱃지 표시\n3. 발행자/고객 정보 2단 카드 표시\n4. 항목 테이블: 모든 셀이 단일 줄 (whitespace-nowrap 수정 결과 검증)\n5. 합계 섹션: 소계, 부가세, 총액 표시\n6. PDF 다운로드 버튼 존재 및 클릭 시 에러 처리 UI 확인",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "b6785dfb-1d9b-4203-a211-2c80b020ea68"
+        }
+      ],
+      "createdAt": "2026-03-09T07:31:23.231Z",
+      "updatedAt": "2026-03-09T07:33:22.610Z",
+      "relatedFiles": [
+        {
+          "path": "src/components/invoice/invoice-view.tsx",
+          "type": "REFERENCE",
+          "description": "메인 뷰 컴포넌트 구조 확인"
         },
         {
-          "path": "src/app/invoice/[id]/page.tsx",
-          "type": "TO_MODIFY",
-          "description": "견적서 뷰어 페이지"
+          "path": "src/components/invoice/invoice-items.tsx",
+          "type": "REFERENCE",
+          "description": "whitespace-nowrap 적용 결과 확인"
+        }
+      ],
+      "implementationGuide": "browser_resize(1280, 900)\nbrowser_navigate('http://localhost:3000/invoice/demo')\nbrowser_snapshot() 전체 구조 확인\nbrowser_take_screenshot() 시각적 검증\n각 섹션 aria-label 또는 텍스트로 요소 존재 확인\nPDF 버튼 클릭 → sonner toast 에러 메시지 또는 응답 확인",
+      "verificationCriteria": "1. 페이지 로드 오류 없음\n2. '그린소프트 ERP 시스템 개발 견적서' 텍스트 표시\n3. '발송됨' 뱃지 표시\n4. 테이블 헤더 수량/단가/금액 단일 줄\n5. PDF 다운로드 버튼 존재",
+      "analysisResult": "Task 006-1 목표: Playwright MCP 브라우저 도구를 사용하여 견적서 서비스의 E2E 통합 테스트를 수행한다. 노션 API 없이 테스트 가능하도록 /invoice/demo 페이지를 searchParams 기반으로 확장하고, 5가지 상태/에러/반응형 시나리오를 순차적으로 검증한다. Next.js 15의 searchParams는 Promise 타입(await 필수)이며, 기존 getMockInvoiceById 함수를 재사용한다.",
+      "summary": "데스크톱 1280px 정상 시나리오 E2E 검증 완료. 모든 섹션(헤더/발행자-고객 카드/항목 테이블/합계/하단 안내) 정상 렌더링. 테이블 헤더(수량/단가/금액) 및 금액 셀(5,000,000원) whitespace-nowrap 적용으로 단일 줄 표시 확인. PDF 다운로드 버튼 존재 확인.",
+      "completedAt": "2026-03-09T07:33:22.595Z"
+    },
+    {
+      "id": "220dde92-92d2-488f-bd2d-bd43959029e8",
+      "name": "상태별 뱃지 및 만료 배너 E2E 테스트",
+      "description": "Playwright MCP로 4가지 상태 뱃지와 만료 배너를 각각 검증한다.\n\n검증 항목:\n1. Draft: /invoice/demo?id=mock-draft-001 → '초안' 뱃지\n2. Approved: /invoice/demo?id=mock-approved-001 → '승인' 뱃지\n3. Rejected: /invoice/demo?id=mock-rejected-001 → '거절' 뱃지\n4. Sent: /invoice/demo (기본) → '발송됨' 뱃지\n5. 만료: /invoice/demo?id=mock-expired-001 → amber 색상 만료 배너 표시",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "b6785dfb-1d9b-4203-a211-2c80b020ea68"
+        }
+      ],
+      "createdAt": "2026-03-09T07:31:23.231Z",
+      "updatedAt": "2026-03-09T07:33:59.417Z",
+      "relatedFiles": [
+        {
+          "path": "src/components/invoice/invoice-status-badge.tsx",
+          "type": "REFERENCE",
+          "description": "STATUS_MAP 라벨 확인: 초안/발송됨/승인/거절"
         },
+        {
+          "path": "src/components/invoice/invoice-expired-banner.tsx",
+          "type": "REFERENCE",
+          "description": "role=alert, 만료 배너 텍스트"
+        }
+      ],
+      "implementationGuide": "각 URL 순차 접속:\nbrowser_navigate('http://localhost:3000/invoice/demo?id=mock-draft-001')\nbrowser_snapshot() → '초안' 텍스트 및 aria-label 확인\nbrowser_navigate('http://localhost:3000/invoice/demo?id=mock-approved-001')\nbrowser_snapshot() → '승인' 텍스트 확인\nbrowser_navigate('http://localhost:3000/invoice/demo?id=mock-rejected-001')\nbrowser_snapshot() → '거절' 텍스트 확인\nbrowser_navigate('http://localhost:3000/invoice/demo?id=mock-expired-001')\nbrowser_snapshot() → 만료 배너 role=alert 확인",
+      "verificationCriteria": "1. mock-draft-001: aria-label 견적서 상태 초안 요소 존재\n2. mock-approved-001: aria-label 견적서 상태 승인 요소 존재\n3. mock-rejected-001: aria-label 견적서 상태 거절 요소 존재\n4. mock-expired-001: role=alert 만료 배너 표시",
+      "analysisResult": "Task 006-1 목표: Playwright MCP 브라우저 도구를 사용하여 견적서 서비스의 E2E 통합 테스트를 수행한다. 노션 API 없이 테스트 가능하도록 /invoice/demo 페이지를 searchParams 기반으로 확장하고, 5가지 상태/에러/반응형 시나리오를 순차적으로 검증한다. Next.js 15의 searchParams는 Promise 타입(await 필수)이며, 기존 getMockInvoiceById 함수를 재사용한다.",
+      "summary": "4가지 상태 뱃지(초안/승인/거절/발송됨) 및 만료 배너 E2E 검증 완료. searchParams 기반 동적 mock 데이터 전환 정상 동작. role=alert 만료 배너 aria 속성도 정확히 적용됨.",
+      "completedAt": "2026-03-09T07:33:59.407Z"
+    },
+    {
+      "id": "4fca3779-f78d-4f69-9af0-6fd1e5c96375",
+      "name": "에러 시나리오 E2E 테스트 — 404",
+      "description": "Playwright MCP로 존재하지 않는 견적서 ID 접근 시 에러 처리를 검증한다.\n\n검증 항목:\n1. /invoice/non-existent-id 접속 → 에러 페이지 렌더링 확인\n2. 노션 API 키 없는 개발 환경에서 error.tsx 또는 not-found.tsx 렌더링 확인\n3. 사용자에게 안내 메시지 표시\n4. 네비게이션 버튼 존재 확인",
+      "status": "completed",
+      "dependencies": [
+        {
+          "taskId": "b6785dfb-1d9b-4203-a211-2c80b020ea68"
+        }
+      ],
+      "createdAt": "2026-03-09T07:31:23.231Z",
+      "updatedAt": "2026-03-09T07:34:51.970Z",
+      "relatedFiles": [
         {
           "path": "src/app/invoice/[id]/not-found.tsx",
-          "type": "TO_MODIFY",
-          "description": "커스텀 404 페이지"
+          "type": "REFERENCE",
+          "description": "견적서를 찾을 수 없습니다 텍스트, FileSearch 아이콘, 홈으로 버튼"
         },
         {
           "path": "src/app/invoice/[id]/error.tsx",
-          "type": "TO_MODIFY",
-          "description": "에러 바운더리"
+          "type": "REFERENCE",
+          "description": "에러 바운더리 컴포넌트"
         },
         {
-          "path": "src/app/api/invoice/[id]/pdf/route.ts",
-          "type": "TO_MODIFY",
-          "description": "PDF API Route 플레이스홀더"
+          "path": "src/app/invoice/[id]/page.tsx",
+          "type": "REFERENCE",
+          "description": "에러 처리 로직 — isNotFound 분기"
         }
       ],
-      "summary": "Phase 1 Task 001 완료: Next.js App Router 기반 라우팅 구조 생성. 견적서 뷰어 (/invoice/[id]), PDF API Route, 루트 레이아웃, 에러/404 페이지 구현됨."
+      "implementationGuide": "browser_navigate('http://localhost:3000/invoice/non-existent-id')\nbrowser_snapshot() → 실제 렌더링된 페이지 확인\nbrowser_take_screenshot() → 시각적 캡처\n결과에 따라 not-found.tsx 또는 error.tsx 동작 기록",
+      "verificationCriteria": "1. 500 서버 오류 흰 화면 없음\n2. 에러 상황에 맞는 페이지 렌더링됨\n3. 사용자에게 안내 메시지 표시됨\n4. 네비게이션 요소 존재",
+      "analysisResult": "Task 006-1 목표: Playwright MCP 브라우저 도구를 사용하여 견적서 서비스의 E2E 통합 테스트를 수행한다. 노션 API 없이 테스트 가능하도록 /invoice/demo 페이지를 searchParams 기반으로 확장하고, 5가지 상태/에러/반응형 시나리오를 순차적으로 검증한다. Next.js 15의 searchParams는 Promise 타입(await 필수)이며, 기존 getMockInvoiceById 함수를 재사용한다.",
+      "summary": "에러 시나리오 E2E 검증 완료. /invoice/non-existent-id 접속 시 error.tsx(에러 바운더리) 정상 동작 확인. 노션 API 키가 설정된 환경에서 Notion APIResponseError(path failed validation)가 isNotFound 패턴에 매칭되지 않아 error.tsx가 렌더링됨. 흰 화면 없이 \"오류가 발생했습니다\" 메시지와 \"다시 시도\" 버튼 표시. 404 개선 여지: 해당 에러 코드도 notFound()로 처리하면 더 나은 UX 제공 가능(선택사항).",
+      "completedAt": "2026-03-09T07:34:51.967Z"
     },
     {
-      "id": "9d78c733-3fa7-4dad-9e92-bbdd4c6fc1df",
-      "name": "Task 002: 타입 정의 및 인터페이스 설계",
-      "description": "도메인 모델 타입과 Notion API 응답 타입, 환경변수 검증 스키마 정의. InvoiceData, InvoiceItem, Issuer, InvoiceClient, InvoiceSummary, InvoiceStatus, ApiResponse<T> 도메인 타입과 NotionInvoicePage, NotionInvoiceItemPage 원시 타입, Zod 기반 환경변수 검증 구현.",
+      "id": "2b2e192d-b4ff-421e-9976-cdcf469e17f0",
+      "name": "모바일 반응형 레이아웃 E2E 테스트",
+      "description": "Playwright MCP로 375px 모바일 뷰포트에서 레이아웃과 테이블 스크롤 동작을 검증한다.\n\n검증 항목:\n1. 375px 너비에서 페이지 가로 스크롤 없이 렌더링\n2. 테이블 컨테이너 overflow-x-auto 스크롤 동작\n3. 발행자/고객 카드 레이아웃 적응\n4. 헤더 섹션 모바일 적응",
       "status": "completed",
-      "dependencies": ["de173b78-5603-4e62-a98f-2cd299e24e9d"],
-      "createdAt": "2026-03-09T02:29:08.189Z",
-      "updatedAt": "2026-03-09T02:29:08.189Z",
-      "completedAt": "2026-03-09T02:29:08.189Z",
-      "implementationGuide": "1. src/lib/invoice/types.ts - InvoiceData 등 도메인 모델 타입 정의\n2. src/lib/notion/types.ts - Notion API 응답 원시 타입 정의\n3. src/lib/env.ts - Zod envSchema로 NOTION_API_KEY, NOTION_INVOICES_DB_ID, NOTION_ITEMS_DB_ID 검증\nNEXT_PUBLIC_ 접두사 절대 사용 금지",
-      "verificationCriteria": "TypeScript 컴파일 오류 없음, Zod 스키마 유효성 검사 통과, ApiResponse<T> 타입이 API Route에서 사용 가능",
-      "relatedFiles": [
+      "dependencies": [
         {
-          "path": "src/lib/invoice/types.ts",
-          "type": "TO_MODIFY",
-          "description": "도메인 모델 타입"
-        },
-        {
-          "path": "src/lib/notion/types.ts",
-          "type": "TO_MODIFY",
-          "description": "Notion API 응답 타입"
-        },
-        {
-          "path": "src/lib/env.ts",
-          "type": "TO_MODIFY",
-          "description": "환경변수 Zod 검증"
+          "taskId": "b6785dfb-1d9b-4203-a211-2c80b020ea68"
         }
       ],
-      "summary": "Phase 1 Task 002 완료: InvoiceData 도메인 모델, Notion API 응답 타입, Zod 환경변수 검증 스키마 구현됨."
-    },
-    {
-      "id": "976c41a5-4763-41c8-8005-9ecd6bcdd7e4",
-      "name": "Task 006: PDF 생성 API 구현",
-      "description": "puppeteer-core + @sparticuz/chromium을 사용하여 /api/invoice/[id]/pdf Route에 실제 PDF 생성 로직 구현. 현재 501 플레이스홀더를 실제 동작하는 PDF 다운로드 API로 교체.\n\n수락 기준:\n- 유효한 견적서 ID로 요청 시 PDF 바이너리 반환 (200)\n- Content-Disposition 헤더: 견적서_[번호]_[고객사].pdf\n- 존재하지 않는 ID: 404 응답\n- 생성 오류: 500 응답\n- 로컬 및 Vercel 서버리스 환경 모두 동작",
-      "notes": "로컬 개발 시 puppeteer 전체 패키지 사용, Vercel 배포 시 @sparticuz/chromium-min 사용 권장. AWS_LAMBDA_FUNCTION_NAME 또는 VERCEL 환경변수로 분기 처리.",
-      "status": "completed",
-      "dependencies": [],
-      "createdAt": "2026-03-09T04:57:19.166Z",
-      "updatedAt": "2026-03-09T05:56:08.905Z",
+      "createdAt": "2026-03-09T07:31:23.231Z",
+      "updatedAt": "2026-03-09T07:36:08.630Z",
       "relatedFiles": [
         {
-          "path": "src/app/api/invoice/[id]/pdf/route.ts",
-          "type": "TO_MODIFY",
-          "description": "현재 501 플레이스홀더, 실제 PDF 생성으로 교체"
+          "path": "src/components/invoice/invoice-view.tsx",
+          "type": "REFERENCE",
+          "description": "sm:rounded-2xl sm:border 반응형 클래스"
         },
         {
-          "path": "src/lib/pdf/generator.ts",
-          "type": "CREATE",
-          "description": "puppeteer PDF 생성 유틸리티"
+          "path": "src/components/invoice/invoice-items.tsx",
+          "type": "REFERENCE",
+          "description": "overflow-x-auto 테이블 래퍼"
         },
         {
-          "path": "next.config.ts",
-          "type": "TO_MODIFY",
-          "description": "serverExternalPackages 설정 추가"
-        },
-        {
-          "path": "package.json",
-          "type": "TO_MODIFY",
-          "description": "puppeteer-core, @sparticuz/chromium 의존성 추가"
+          "path": "src/components/invoice/invoice-info.tsx",
+          "type": "REFERENCE",
+          "description": "2단 그리드 반응형"
         }
       ],
-      "implementationGuide": "1. puppeteer-core, @sparticuz/chromium 설치\n2. next.config.ts에 serverExternalPackages 추가\n3. src/lib/pdf/generator.ts 작성 (환경 분기: 로컬=puppeteer 내장 크로미움, Vercel=@sparticuz/chromium)\n4. /api/invoice/[id]/pdf/route.ts 실제 구현으로 교체\n5. Playwright MCP로 PDF 다운로드 테스트",
-      "verificationCriteria": "1. GET /api/invoice/[id]/pdf 요청 시 application/pdf Content-Type으로 파일 수신\n2. Content-Disposition 헤더에 한글 파일명 인코딩 정상\n3. 404/500 에러 케이스 JSON 응답 확인\n4. npm run build 성공",
-      "analysisResult": "Next.js 15.5.3 App Router 기반 Invoice Web Viewer에서 PDF 생성 API를 구현합니다. puppeteer-core + @sparticuz/chromium을 사용하여 Vercel 서버리스 환경에서 견적서 페이지를 A4 PDF로 변환합니다.",
-      "summary": "PDF 생성 API 완전 구현 완료. puppeteer-core + @sparticuz/chromium 설치, next.config.ts serverExternalPackages 설정, src/lib/pdf/generator.ts 작성(로컬/Vercel 환경 분기), /api/invoice/[id]/pdf route.ts 실제 구현. 200(PDF 바이너리 140KB), 404(견적서 없음), 500(생성 오류) 모두 정상 동작 확인. 추가로 @notionhq/client v5의 dataSources.query 호환성 버그 수정(fetch 직접 호출로 교체), formatKoreanDate null-safety 수정 포함.",
-      "completedAt": "2026-03-09T05:56:08.902Z"
+      "implementationGuide": "browser_resize(375, 812)\nbrowser_navigate('http://localhost:3000/invoice/demo')\nbrowser_snapshot() → 모바일 레이아웃 확인\nbrowser_take_screenshot(fullPage=true) → 전체 페이지 캡처\n가로 스크롤바 존재 여부 확인\n테이블 섹션 스크롤 가능 여부 확인",
+      "verificationCriteria": "1. 375px에서 레이아웃 깨짐 없음\n2. 테이블 수평 스크롤 가능\n3. 텍스트 잘림 없음\n4. 전체 페이지 스크린샷에서 정상 레이아웃 확인",
+      "analysisResult": "Task 006-1 목표: Playwright MCP 브라우저 도구를 사용하여 견적서 서비스의 E2E 통합 테스트를 수행한다. 노션 API 없이 테스트 가능하도록 /invoice/demo 페이지를 searchParams 기반으로 확장하고, 5가지 상태/에러/반응형 시나리오를 순차적으로 검증한다. Next.js 15의 searchParams는 Promise 타입(await 필수)이며, 기존 getMockInvoiceById 함수를 재사용한다.",
+      "summary": "모바일 375px 반응형 E2E 테스트 완료. 테스트 중 overflow-x-auto가 작동하지 않는 버그(테이블 w-full로 컨테이너에 압축)를 발견하여 min-w-max 추가로 수정. 수정 후 테이블 가로 스크롤 정상 동작 확인. 항목명 셀 단일 줄 표시, 발행자/고객 카드 세로 스택, 전체 레이아웃 깨짐 없음 확인. typecheck 통과.",
+      "completedAt": "2026-03-09T07:36:08.626Z"
     }
   ]
 }
